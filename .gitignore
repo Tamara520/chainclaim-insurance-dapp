@@ -1,0 +1,6 @@
+.DS_Store
+__pycache__/
+.pytest_cache/
+07_Video/*.mp4
+07_Video/*.mov
+00_Brief/
