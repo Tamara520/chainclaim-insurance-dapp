@@ -5,3 +5,4 @@ __pycache__/
 07_Video/*.mov
 00_Brief/
 ganache.log
+09_Evidence/Screenshot*
