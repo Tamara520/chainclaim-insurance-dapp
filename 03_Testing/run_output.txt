@@ -1,0 +1,81 @@
+
+======================================================================
+1. CONNECT TO GANACHE
+======================================================================
+  Chain ID      : 1337
+  Latest block  : 1
+  Insurer  (receiver) : 0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1
+  Policyholder (sender): 0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0
+  Assessor            : 0x22d491Bde2303f2f43325b2108D26f1eAbA1e32b
+  Attacker (tests)    : 0xE11BA2b4D45Eaed5996Cd0823791E0C93114882d
+  ChainClaim contract : 0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab
+  Assessor on-chain   : 0x22d491Bde2303f2f43325b2108D26f1eAbA1e32b
+
+======================================================================
+2. NORMAL CLAIM FLOW
+======================================================================
+  OK  fundPool (insurer, 10 ETH)         gas=22853   block=2 tx=0x454d48aca8af03aee5...
+  OK  buyPolicy (holder, 0.01 ETH)       gas=47574   block=3 tx=0x5d2d5d9d15a95a0d1a...
+  Evidence file       : accident-report-1791063059.pdf
+  Keccak-256 hash     : 0x03b9a28ddb8a21c25862fadc3fb96f02609e9ccad3484398a2950fe9c3933f56  (only the hash goes on-chain)
+  OK  submitClaim (holder, 4 ETH)        gas=167395  block=4 tx=0x6a2c16ff8d31a1f323...
+  Claim #0 status    : Submitted
+
+======================================================================
+3. EIP-712 + ECDSA ASSESSOR SIGNATURE
+======================================================================
+  EIP-712 digest (contract): 0x29b05d1899222608bcc7d244a3308f50d10c5eb27eecde292380d18a7dbd7a72
+  Signature r      : 0x5d730d5e458d542df05d33800511135987f937d84f44cfec44acba3ec92c718a
+  Signature s      : 0x6248aa0e9e7ceade08c7544aa42c019be63475d13cd857f7dd88946f7f3f0d42
+  Signature v      : 28
+  Recovered signer : 0x22d491Bde2303f2f43325b2108D26f1eAbA1e32b  (matches assessor: True)
+  Gas used to sign : 0 (signed off-chain)
+  OK  assessClaim (relayed by holder)    gas=103101  block=5 tx=0x863d633a593d6f22cb...
+  Claim #0 status    : Approved
+
+======================================================================
+4. PAYOUT
+======================================================================
+  OK  payClaim (holder pulls payout)     gas=47376   block=6 tx=0xea0b23b1b3da645943...
+  Holder balance before : 999.989762607775379003 ETH
+  Holder balance after  : 1003.989734946751865355 ETH
+  Received (after gas)  : 4 ETH
+  Claim #0 status    : Paid
+  Contract balance      : 6.01 ETH
+
+======================================================================
+5. NEGATIVE AND SECURITY TESTS
+======================================================================
+  PASS Duplicate evidence (reused hash)         -> reverted: "Evidence already used"
+  PASS Claim without a policy (attacker)        -> reverted: "Active policy required"
+  PASS Claim above cover limit (6 ETH)          -> reverted: "Exceeds cover limit"
+  PASS Pay the same claim twice                 -> reverted: "Claim not approved"
+  OK  submitClaim #2 (holder, 1 ETH)     gas=150295  block=7 tx=0xd723173cf87745888b...
+  PASS Forged signature (attacker key)          -> reverted: "Invalid assessor signature"
+  PASS Tampered decision (false -> true)        -> reverted: "Invalid assessor signature"
+  PASS Replay of a used nonce                   -> reverted: "Assessment nonce already used"
+  PASS Expired signature (deadline passed)      -> reverted: "Signature expired"
+  PASS Unauthorised payout (attacker)           -> reverted: "Not authorised"
+  PASS Attacker funds pool (only insurer)       -> reverted: "Only insurer"
+  PASS Plain ETH transfer to contract           -> reverted: "Use fundPool or buyPolicy"
+  OK  assessClaim #2 = REJECTED          gas=103111  block=8 tx=0xbf302696600591a8c1...
+  Claim #1 status    : Rejected
+  PASS Attacker pauses contract                 -> reverted: "Only insurer"
+  OK  pause (insurer)                    gas=44656   block=9 tx=0x2a7c28ec708146e500...
+  PASS Submit claim while paused                -> reverted: "Contract is paused"
+  OK  unpause (insurer)                  gas=22733   block=10 tx=0x88e576996e038c722d...
+
+======================================================================
+6. SUMMARY
+======================================================================
+  Negative/security tests passed: 13 / 13
+  Gas report saved to: 03_Testing/gas_report.csv
+    fundPool (insurer, 10 ETH)            22853
+    buyPolicy (holder, 0.01 ETH)          47574
+    submitClaim (holder, 4 ETH)          167395
+    assessClaim (relayed by holder)      103101
+    payClaim (holder pulls payout)        47376
+    submitClaim #2 (holder, 1 ETH)       150295
+    assessClaim #2 = REJECTED            103111
+    pause (insurer)                       44656
+    unpause (insurer)                     22733
