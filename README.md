@@ -72,7 +72,4 @@ address, runs the full flow and the 13 negative/security tests, and saves the ou
 The private keys in `interact.py` are the public Ganache `--deterministic` test keys.
 They must never be used on a real network.
 
-## AI use
 
-AI assistance was used with the lecturer's permission. Full details and exact prompts are
-in the AI Declaration submitted on Moodle.
