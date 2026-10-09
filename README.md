@@ -28,7 +28,7 @@ Submitted -> Approved -> Paid, or Submitted -> Rejected
 - Replay protection: nonce + deadline; EIP-2 low-s check against signature malleability
 - Duplicate-claim protection: each evidence hash can be used only once
 - Only the evidence **hash** is stored on-chain (no personal data - GDPR friendly)
-- Checks-Effects-Interactions, `nonReentrant` guard and pull payment
+- Checks-Effects-Interactions, `nonReentrant` guard and claimant-callable payout
 - Cover limit (`MAX_COVER = 5 ETH`), insurer-only `fundPool`, `pause` circuit breaker
 - Plain ETH transfers to the contract are rejected
 
